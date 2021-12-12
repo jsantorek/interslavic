@@ -234,6 +234,12 @@ export const Settings =
                         checked={enabledPages.includes('viewer')}
                         onChange={() => dispatch(togglePage('viewer'))}
                     />
+                    <Checkbox
+                        key="translator"
+                        title={t('translatorEnable')}
+                        checked={enabledPages.includes('translator')}
+                        onChange={() => dispatch(togglePage('translator'))}
+                    />
                 </div>
             </div>
         );
