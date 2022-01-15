@@ -22,7 +22,6 @@ import {
 import 'legacy/az/az.js';
 import 'legacy/az/az.dawg.js';
 import 'legacy/az/az.morph.js';
-import 'legacy/az/az.tokens.js';
 
 function toUpperCase(str: string) {
     if (!str) {
