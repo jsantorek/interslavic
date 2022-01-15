@@ -14,6 +14,10 @@
     margin: 2px var(--gap-size);
   }
 
+  .is-api {
+    margin: 0 var(--gap-size);
+  }
+
   &__source-text {
     margin: var(--gap-size) var(--gap-size) 0 var(--gap-size);
   }

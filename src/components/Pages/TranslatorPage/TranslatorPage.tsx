@@ -15,6 +15,7 @@ import { useFlavorisationType } from 'hooks/useFlavorisationType';
 import { useLoading } from 'hooks/useLoading';
 
 import { Button } from 'components/Button';
+import { Checkbox } from 'components/Checkbox';
 import { Expand } from 'components/Expand';
 import { FlavorisationSelector } from 'components/FlavorisationSelector';
 import { LineSelector } from 'components/LineSelector';
@@ -26,8 +27,6 @@ import './TranslatorPage.scss';
 const defaultTextText = 'Вредному коту дали миску с едой, а он перевернул её и ничего не съел.\nЭтот переводчик работает почти как Google Translate, но только с русского языка на междуславянский.';
 // const defaultTextText = 'Кошки, наряду с собаками — одни из самых популярных домашних питомцев в мире. Впрочем, далеко не все их породы живут по уютным квартирам — бессчётное количество этих созданий до сих пор ведёт дикий и вольный образ жизни.\nИ, если задуматься, множество фактов о кошках мы попросту не знаем, несмотря на то, что они живут с нами по соседству.';
 // const defaultTextText = '';
-
-const IS_API = true;
 
 export const TranslatorPage = () => {
     const dispatch = useDispatch();
@@ -42,6 +41,7 @@ export const TranslatorPage = () => {
     const isLoading = useLoading();
     const [translatedPlainText, setTranslatedPlainText] = useState('');
     const [expanded, setExpanded] = useState(false);
+    const [isApi, setApi] = useState(Boolean(JSON.parse(localStorage.getItem('isApi'))));
 
     const onChangeExpand = useCallback(() => {
         setExpanded(!expanded);
@@ -68,13 +68,13 @@ export const TranslatorPage = () => {
     ;
 
     useEffect(() => {
-        if (IS_API) {
+        if (!isApi) {
             Translator.init(() => setTranslatorLoaded(true));
         }
-    }, [setTranslatorLoaded]);
+    }, [setTranslatorLoaded, isApi]);
 
     useEffect(() => {
-        if (IS_API) {
+        if (isApi) {
             setTranslating(true);
             const fetchOptions = {
                 method: 'POST',
@@ -87,19 +87,8 @@ export const TranslatorPage = () => {
 
             fetch('https://isv-rules-bt2901.pythonanywhere.com/api/', fetchOptions)
                 .then((res) => res.json())
-                .then((data) => {
-                    const nodes = data.translation.map((arr) => {
-                        const str = arr[0];
-                        const forms = arr.slice(1);
-                        const type = /[,|.|\?|\[|\]]/.test(str) ? 'space' : 'valid';
-
-                        return {
-                            str,
-                            forms,
-                            type,
-                        };
-                    });
-                    setRawResults(nodes);
+                .then(({ translation }) => {
+                    setRawResults(translation);
 
                     setTranslating(false);
                 })
@@ -115,7 +104,7 @@ export const TranslatorPage = () => {
                 });
             }
         }
-    }, [text, setResults, isLoading, translatorLoaded, setTranslatorLoaded, setTranslating]);
+    }, [text, setResults, isLoading, translatorLoaded, setTranslatorLoaded, setTranslating, isApi]);
 
     useEffect(() => {
         const formattedNodes = Translator.formatNodes(rawResults, flavorisationType, alphabetType);
@@ -151,6 +140,15 @@ export const TranslatorPage = () => {
                     )
                 }
                 <FlavorisationSelector key="flavorisation" />
+                <Checkbox
+                    className="bold is-api"
+                    title={t('isApi')}
+                    checked={isApi}
+                    onChange={() => {
+                        localStorage.setItem('isApi', JSON.stringify(!isApi));
+                        setApi(!isApi);
+                    }}
+                />
             </Expand>
             <TranslateResults
                 results={results}
