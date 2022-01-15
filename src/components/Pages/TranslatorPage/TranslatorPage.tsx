@@ -67,7 +67,11 @@ export const TranslatorPage = () => {
         .map((item) => ({ name: t(item.name), value: item.value }))
     ;
 
-    useEffect(() => Translator.init(() => setTranslatorLoaded(true)), [setTranslatorLoaded]);
+    useEffect(() => {
+        if (IS_API) {
+            Translator.init(() => setTranslatorLoaded(true));
+        }
+    }, [setTranslatorLoaded]);
 
     useEffect(() => {
         if (IS_API) {
