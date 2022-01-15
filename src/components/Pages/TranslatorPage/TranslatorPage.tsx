@@ -85,7 +85,7 @@ export const TranslatorPage = () => {
                 body: JSON.stringify({ lang: 'ru', text }),
             };
 
-            fetch('http://isv-rules-bt2901.pythonanywhere.com/api/', fetchOptions)
+            fetch('https://isv-rules-bt2901.pythonanywhere.com/api/', fetchOptions)
                 .then((res) => res.json())
                 .then((data) => {
                     const nodes = data.translation.map((arr) => {
