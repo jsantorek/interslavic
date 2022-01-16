@@ -134,6 +134,8 @@ interface ITranslateParams {
 export type TranslateNodeType = 'valid' | 'maybe' | 'error' | 'space';
 
 export interface ITranslateNode {
+    start?: number,
+    original?: string,
     str: string,
     type: TranslateNodeType,
     forms?: string[],
@@ -406,11 +408,14 @@ class TranslatorClass {
     public translateSync({ text, from = 'ru', to = 'isv' }: ITranslateParams, showTime = true): ITranslateNode[] {
         const startTranslateTime = performance.now();
 
-        const nodes = splitText(text).map((item) => {
+        const nodes = splitText(text).map((item, index, arr) => {
             const translatable = isCyrillic(item);
+            const start = arr.slice(0, index).reduce((acc, element) => acc + element.length, 0);
 
             if (!translatable) {
                 return {
+                    start,
+                    original: item,
                     type: 'space',
                     str: item,
                 };
@@ -501,6 +506,8 @@ class TranslatorClass {
             }
 
             const result = {
+                start,
+                original: item,
                 str,
                 type,
                 forms,

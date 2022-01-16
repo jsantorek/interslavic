@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { alphabetTypes } from 'consts';
@@ -42,6 +42,7 @@ export const TranslatorPage = () => {
     const [translatedPlainText, setTranslatedPlainText] = useState('');
     const [expanded, setExpanded] = useState(false);
     const [isApi, setApi] = useState(Boolean(JSON.parse(localStorage.getItem('isApi'))));
+    const fromTextRef = useRef<HTMLTextAreaElement>(null);
 
     const onChangeExpand = useCallback(() => {
         setExpanded(!expanded);
@@ -61,6 +62,20 @@ export const TranslatorPage = () => {
         setResults(nodes);
         setTranslatedPlainText(Translator.getPlain(nodes));
     }, [setResults, setTranslatedPlainText]);
+
+    const onTranslateResultsHover = useCallback((node, index, isHover) => {
+        if (fromTextRef && fromTextRef.current) {
+            if (isHover) {
+                const startIndex = node.start;
+                const endIndex = startIndex + node.original?.length;
+                fromTextRef.current.setSelectionRange(startIndex, endIndex);
+                fromTextRef.current.focus();
+            } else {
+                fromTextRef.current.setSelectionRange(0, 0);
+                fromTextRef.current.blur();
+            }
+        }
+    }, [fromTextRef, text]);
 
     const alphabetsSelectOptions = alphabetTypes
         .filter(({ value }) => alphabets[value])
@@ -118,6 +133,7 @@ export const TranslatorPage = () => {
     return (
         <div className="translator">
             <Textarea
+                ref={fromTextRef}
                 placeholder={t('translatorPlaceholderText')}
                 className="translator__source-text"
                 value={text}
@@ -153,6 +169,7 @@ export const TranslatorPage = () => {
             <TranslateResults
                 results={results}
                 onChange={onTranslateResultsChange}
+                onHover={onTranslateResultsHover}
                 isLoading={isTranslating}
             />
             <Textarea

@@ -1,25 +1,27 @@
 import classNames from 'classnames';
 
-import { TranslateNodeType } from 'services/translator';
+import { ITranslateNode, TranslateNodeType } from 'services/translator';
 
 import './TranslateItem.scss';
 
 interface ITranslateItemProps {
-    str: string;
+    node: ITranslateNode;
     index: number;
-    type: TranslateNodeType;
     onItemChange?: (itemIndex: number, formIndex: number) => void;
-    forms?: string[];
+    onHover?: (node: ITranslateNode, index: number, isHover: boolean) => void;
     isLoading?: boolean;
 }
 
-export const TranslateItem = ({ str, type, onItemChange, index, forms, isLoading }: ITranslateItemProps) => {
+export const TranslateItem = ({ node, onItemChange, onHover, index, isLoading }: ITranslateItemProps) => {
+    const { str, type, forms } = node;
     const hasForms = forms && forms.length > 1;
 
     return (
         <div
             className={classNames('translate-item', [type], { forms: hasForms, br: str === '\n', loading: isLoading })}
             key={index}
+            onMouseOver={() => onHover(node, index, true)}
+            onMouseOut={() => onHover(node, index, false)}
         >
             {str}
             {

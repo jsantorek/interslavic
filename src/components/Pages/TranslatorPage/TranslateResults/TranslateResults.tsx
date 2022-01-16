@@ -12,10 +12,11 @@ interface ITranslateResultsProps {
     results: ITranslateNode[];
     className?: string;
     onChange: (changedNodes: ITranslateNode[]) => void;
+    onHover: (node: ITranslateNode, index: number, isHover: boolean) => void;
     isLoading?: boolean;
 }
 
-export const TranslateResults = ({ className, results, onChange, isLoading }: ITranslateResultsProps) => {
+export const TranslateResults = ({ className, results, onChange, isLoading, onHover }: ITranslateResultsProps) => {
     const onItemChange = useCallback((itemIndex, formIndex) => {
         onChange(Translator.replaceNode(results, itemIndex, formIndex));
     }, [results]);
@@ -24,14 +25,13 @@ export const TranslateResults = ({ className, results, onChange, isLoading }: IT
         <div
             className={classNames('translate-results', [className])}
         >
-            {results.map(({ str, type, forms }, i) => (
+            {results.map((node, i) => (
                 <TranslateItem
                     key={i}
-                    str={str}
-                    type={type}
+                    node={node}
                     index={i}
                     onItemChange={onItemChange}
-                    forms={forms}
+                    onHover={onHover}
                     isLoading={isLoading}
                 />
             ))}
