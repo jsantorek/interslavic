@@ -1,5 +1,6 @@
 import { Dictionary } from 'services/dictionary';
 
+import { Az } from 'legacy/az/az.js';
 import { conjugationVerb, getConjugationVerbFlat } from 'legacy/conjugationVerb';
 import { declensionAdjective, getDeclensionAdjectiveFlat } from 'legacy/declensionAdjective';
 import { declensionNoun, getDeclensionNounFlat } from 'legacy/declensionNoun';
@@ -18,10 +19,6 @@ import {
     isPlural,
     isSingular,
 } from 'utils/wordDetails';
-
-import 'legacy/az/az.js';
-import 'legacy/az/az.dawg.js';
-import 'legacy/az/az.morph.js';
 
 function toUpperCase(str: string) {
     if (!str) {

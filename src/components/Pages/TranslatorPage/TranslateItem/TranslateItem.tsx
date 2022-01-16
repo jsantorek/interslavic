@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 
-import { ITranslateNode, TranslateNodeType } from 'services/translator';
+import { ITranslateNode } from 'services/translator';
 
 import './TranslateItem.scss';
 
