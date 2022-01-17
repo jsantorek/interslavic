@@ -132,7 +132,7 @@ export type TranslateNodeType = 'valid' | 'maybe' | 'error' | 'space';
 
 export interface ITranslateNode {
     start?: number,
-    original?: string,
+    end?: number,
     str: string,
     type: TranslateNodeType,
     forms?: string[],
@@ -408,11 +408,12 @@ class TranslatorClass {
         const nodes = splitText(text).map((item, index, arr) => {
             const translatable = isCyrillic(item);
             const start = arr.slice(0, index).reduce((acc, element) => acc + element.length, 0);
+            const end = start + item.length;
 
             if (!translatable) {
                 return {
                     start,
-                    original: item,
+                    end,
                     type: 'space',
                     str: item,
                 };
@@ -454,8 +455,6 @@ class TranslatorClass {
                 } else {
                     type = 'valid';
                 }
-
-                // const formattedTranslates = Dictionary.formatTranslate(rawResults, from, to, flavorisationType);
 
                 if (translateResults && translateResults.length) {
                     firstTranslateResult = translateResults[0];
@@ -504,7 +503,7 @@ class TranslatorClass {
 
             const result = {
                 start,
-                original: item,
+                end,
                 str,
                 type,
                 forms,
