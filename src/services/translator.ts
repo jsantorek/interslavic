@@ -516,7 +516,7 @@ class TranslatorClass {
 
         const translateTime = Math.round(performance.now() - startTranslateTime); // @TODO: send to GA
 
-        if (process.env.NODE_ENV !== 'production' && showTime) {
+        if (showTime) {
             // eslint-disable-next-line no-console
             console.log('TRANSLATE', `${translateTime}ms`);
         }
