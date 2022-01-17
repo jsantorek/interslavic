@@ -360,7 +360,7 @@ class TranslatorClass {
         if (this.inited) {
             done();
         } else {
-            Az.Morph.init('dicts', () => {
+            Az.Morph.init('az_dicts', () => {
                 this.inited = true;
                 done();
             });
