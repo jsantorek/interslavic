@@ -83,9 +83,7 @@ export const TranslatorPage = () => {
     const onTranslateResultsHover = useCallback((node, index, isHover) => {
         if (fromTextRef && fromTextRef.current) {
             if (isHover) {
-                const startIndex = node.start;
-                const endIndex = startIndex + node.original?.length;
-                fromTextRef.current.setSelectionRange(startIndex, endIndex);
+                fromTextRef.current.setSelectionRange(node.start, node.end);
                 fromTextRef.current.focus();
             } else {
                 fromTextRef.current.setSelectionRange(0, 0);
