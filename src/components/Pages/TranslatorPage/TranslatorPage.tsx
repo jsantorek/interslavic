@@ -1,3 +1,4 @@
+import debounce from 'lodash/debounce';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -27,6 +28,22 @@ import './TranslatorPage.scss';
 const defaultTextText = 'Вредному коту дали миску с едой, а он перевернул её и ничего не съел.\nЭтот переводчик работает почти как Google Translate, но только с русского языка на междуславянский.';
 // const defaultTextText = 'Кошки, наряду с собаками — одни из самых популярных домашних питомцев в мире. Впрочем, далеко не все их породы живут по уютным квартирам — бессчётное количество этих созданий до сих пор ведёт дикий и вольный образ жизни.\nИ, если задуматься, множество фактов о кошках мы попросту не знаем, несмотря на то, что они живут с нами по соседству.';
 // const defaultTextText = '';
+
+const translateFromApi = debounce((lang, text, callback) => {
+    const fetchOptions = {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ lang, text }),
+    };
+
+    fetch('https://isv-rules-bt2901.pythonanywhere.com/api/', fetchOptions)
+        .then((res) => res.json())
+        .then(({ translation }) => callback(translation))
+    ;
+}, 1000);
 
 export const TranslatorPage = () => {
     const dispatch = useDispatch();
@@ -91,23 +108,11 @@ export const TranslatorPage = () => {
     useEffect(() => {
         if (isApi) {
             setTranslating(true);
-            const fetchOptions = {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ lang: 'ru', text }),
-            };
+            translateFromApi('ru', text, (translation) => {
+                setRawResults(translation);
 
-            fetch('https://isv-rules-bt2901.pythonanywhere.com/api/', fetchOptions)
-                .then((res) => res.json())
-                .then(({ translation }) => {
-                    setRawResults(translation);
-
-                    setTranslating(false);
-                })
-            ;
+                setTranslating(false);
+            });
         } else {
             if (!isLoading && translatorLoaded) {
                 setTranslating(true);
