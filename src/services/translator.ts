@@ -1,6 +1,6 @@
 import { Dictionary } from 'services/dictionary';
 
-import { Az } from 'legacy/az/az.js';
+import { loadDicts,Morph } from 'legacy/az';
 import { conjugationVerb, getConjugationVerbFlat } from 'legacy/conjugationVerb';
 import { declensionAdjective, getDeclensionAdjectiveFlat } from 'legacy/declensionAdjective';
 import { declensionNoun, getDeclensionNounFlat } from 'legacy/declensionNoun';
@@ -360,7 +360,9 @@ class TranslatorClass {
         if (this.inited) {
             done();
         } else {
-            Az.Morph.init('az_dicts', () => {
+            loadDicts('az_dicts', (files) => {
+                Morph.init(files);
+
                 this.inited = true;
                 done();
             });
@@ -426,7 +428,7 @@ class TranslatorClass {
             }
 
             let type = 'error'
-            const parsedWords = Az.Morph(rawWord, { typos: 'auto' });
+            const parsedWords = Morph(rawWord, { typos: 'auto' });
             const parsedWord = parsedWords.length ? parsedWords[0] : undefined
 
             const infinitive = parsedWord && parsedWord.normalize().word;
