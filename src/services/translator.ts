@@ -1,6 +1,6 @@
 import { Dictionary } from 'services/dictionary';
 
-import { loadDicts,Morph } from 'legacy/az';
+import { loadDicts, Morph } from 'legacy/az';
 import { conjugationVerb, getConjugationVerbFlat } from 'legacy/conjugationVerb';
 import { declensionAdjective, getDeclensionAdjectiveFlat } from 'legacy/declensionAdjective';
 import { declensionNoun, getDeclensionNounFlat } from 'legacy/declensionNoun';
