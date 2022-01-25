@@ -10,12 +10,22 @@
   overflow-x: hidden;
   background: var(--light);
 
-  hr {
-    margin: 2px var(--gap-size);
+  &__lang-selector {
+    display: flex;
+    align-items: center;
+    margin: var(--gap-size) var(--gap-size) 0;
+
+    .is-api {
+      margin: 0 var(--gap-size) 0 0;
+    }
+
+    .lang-selector {
+      width: 100%;
+    }
   }
 
-  .is-api {
-    margin: 0 var(--gap-size);
+  hr {
+    margin: 2px var(--gap-size);
   }
 
   &__source-text {

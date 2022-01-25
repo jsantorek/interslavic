@@ -19,6 +19,7 @@ import { Button } from 'components/Button';
 import { Checkbox } from 'components/Checkbox';
 import { Expand } from 'components/Expand';
 import { FlavorisationSelector } from 'components/FlavorisationSelector';
+import { LangSelector } from 'components/LangSelector';
 import { LineSelector } from 'components/LineSelector';
 import { TranslateResults } from 'components/Pages/TranslatorPage/TranslateResults';
 import { Textarea } from 'components/Textarea';
@@ -45,6 +46,10 @@ const translateFromApi = debounce((lang, text, callback) => {
     ;
 }, 1000);
 
+const translatorApiLangs = [
+    'ru', 'be', 'uk', 'pl', 'cs', 'sk', 'bg', 'mk', 'sr', 'hr', 'sl', 'cu', 'de', 'nl', 'eo',
+];
+
 export const TranslatorPage = () => {
     const dispatch = useDispatch();
     const alphabets = useAlphabets();
@@ -59,6 +64,7 @@ export const TranslatorPage = () => {
     const [translatedPlainText, setTranslatedPlainText] = useState('');
     const [expanded, setExpanded] = useState(false);
     const [isApi, setApi] = useState(Boolean(JSON.parse(localStorage.getItem('isApi'))));
+    const [fromLang, setFromLang] = useState(JSON.parse(localStorage.getItem('translatorLang')) || 'en');
     const fromTextRef = useRef<HTMLTextAreaElement>(null);
 
     const onChangeExpand = useCallback(() => {
@@ -106,7 +112,7 @@ export const TranslatorPage = () => {
     useEffect(() => {
         if (isApi) {
             setTranslating(true);
-            translateFromApi('ru', text, (translation) => {
+            translateFromApi(fromLang, text, (translation) => {
                 setRawResults(translation);
 
                 setTranslating(false);
@@ -122,7 +128,7 @@ export const TranslatorPage = () => {
                 });
             }
         }
-    }, [text, setResults, isLoading, translatorLoaded, setTranslatorLoaded, setTranslating, isApi]);
+    }, [text, setResults, isLoading, translatorLoaded, setTranslatorLoaded, setTranslating, isApi, fromLang]);
 
     useEffect(() => {
         const formattedNodes = Translator.formatNodes(rawResults, flavorisationType, alphabetType);
@@ -133,8 +139,39 @@ export const TranslatorPage = () => {
 
     const onCopyClick = useCallback(() => navigator.clipboard.writeText(translatedPlainText), [translatedPlainText])
 
+    const onLangChange = useCallback(({ from }) => {
+        if (from !== 'isv') {
+            setFromLang(from);
+            localStorage.setItem('translatorLang', JSON.stringify(from));
+        }
+    }, [setFromLang]);
+
+    const onApiClick = useCallback(() => {
+        localStorage.setItem('isApi', JSON.stringify(!isApi));
+        setApi(!isApi);
+    }, [isApi]);
+
     return (
         <div className="translator">
+            <div
+                className="translator__lang-selector"
+            >
+                <Checkbox
+                    className="bold is-api"
+                    title={t('isApi')}
+                    checked={isApi}
+                    onChange={onApiClick}
+                />
+                <LangSelector
+                    disabled={!isApi}
+                    lang={{
+                        from: fromLang,
+                        to: 'isv',
+                    }}
+                    langs={translatorApiLangs}
+                    onChange={onLangChange}
+                />
+            </div>
             <Textarea
                 ref={fromTextRef}
                 placeholder={t('translatorPlaceholderText')}
@@ -159,15 +196,6 @@ export const TranslatorPage = () => {
                     )
                 }
                 <FlavorisationSelector key="flavorisation" />
-                <Checkbox
-                    className="bold is-api"
-                    title={t('isApi')}
-                    checked={isApi}
-                    onChange={() => {
-                        localStorage.setItem('isApi', JSON.stringify(!isApi));
-                        setApi(!isApi);
-                    }}
-                />
             </Expand>
             <TranslateResults
                 results={results}
