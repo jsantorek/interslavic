@@ -51,6 +51,7 @@
     "@ag-grid-community/core": "25.2.0",
     "@types/grecaptcha": "^3.0.3",
     "classnames": "2.3.1",
+    "dawgjs": "^0.1.4",
     "lodash": "4.17.21",
     "md5": "2.3.0",
     "node-fetch": "2.6.1",

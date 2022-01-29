@@ -360,7 +360,7 @@ class TranslatorClass {
         if (this.inited) {
             done();
         } else {
-            loadDicts('az_dicts', (files) => {
+            loadDicts('dicts/ru', (files) => {
                 Morph.init(files);
 
                 this.inited = true;
