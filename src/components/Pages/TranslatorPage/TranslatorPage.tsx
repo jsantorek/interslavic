@@ -6,7 +6,7 @@ import { alphabetTypes } from 'consts';
 
 import { t } from 'translations';
 
-import { setAlphabetTypeAction } from 'actions';
+import { setAlphabetTypeAction, translatorLangAction } from 'actions';
 
 import { Translator } from 'services/translator';
 
@@ -14,6 +14,7 @@ import { useAlphabets } from 'hooks/useAlphabets';
 import { useAlphabetType } from 'hooks/useAlphabetType';
 import { useFlavorisationType } from 'hooks/useFlavorisationType';
 import { useLoading } from 'hooks/useLoading';
+import { useTranslatorLang } from 'hooks/useTranslatorLang';
 
 import { Button } from 'components/Button';
 import { Checkbox } from 'components/Checkbox';
@@ -47,7 +48,11 @@ const translateFromApi = debounce((lang, text, callback) => {
 }, 1000);
 
 const translatorApiLangs = [
-    'ru', 'be', 'uk', 'pl', 'cs', 'sk', 'bg', 'mk', 'sr', 'hr', 'sl', 'cu', 'de', 'nl', 'eo',
+    'en', 'ru', 'be', 'uk', 'pl', 'cs', 'sk', 'bg', 'mk', 'sr', 'hr', 'sl', 'cu', 'de', 'nl', 'eo',
+];
+
+const translatorLangs = [
+    'ru', 'uk',
 ];
 
 export const TranslatorPage = () => {
@@ -64,7 +69,7 @@ export const TranslatorPage = () => {
     const [translatedPlainText, setTranslatedPlainText] = useState('');
     const [expanded, setExpanded] = useState(false);
     const [isApi, setApi] = useState(Boolean(JSON.parse(localStorage.getItem('isApi'))));
-    const [fromLang, setFromLang] = useState(JSON.parse(localStorage.getItem('translatorLang')) || 'en');
+    const translatorLang = useTranslatorLang();
     const fromTextRef = useRef<HTMLTextAreaElement>(null);
 
     const onChangeExpand = useCallback(() => {
@@ -105,14 +110,15 @@ export const TranslatorPage = () => {
 
     useEffect(() => {
         if (!isApi) {
-            Translator.init(() => setTranslatorLoaded(true));
+            setTranslatorLoaded(false);
+            Translator.init(translatorLang.from, () => setTranslatorLoaded(true));
         }
-    }, [setTranslatorLoaded, isApi]);
+    }, [setTranslatorLoaded, isApi, translatorLang.from]);
 
     useEffect(() => {
         if (isApi) {
             setTranslating(true);
-            translateFromApi(fromLang, text, (translation) => {
+            translateFromApi(translatorLang.from, text, (translation) => {
                 setRawResults(translation);
 
                 setTranslating(false);
@@ -121,14 +127,14 @@ export const TranslatorPage = () => {
             if (!isLoading && translatorLoaded) {
                 setTranslating(true);
 
-                Translator.translate({ text }).then((nodes) => {
+                Translator.translate(text).then((nodes) => {
                     setRawResults(nodes);
 
                     setTranslating(false);
                 });
             }
         }
-    }, [text, setResults, isLoading, translatorLoaded, setTranslatorLoaded, setTranslating, isApi, fromLang]);
+    }, [text, setResults, isLoading, translatorLoaded, setTranslating, isApi, translatorLang.from]);
 
     useEffect(() => {
         const formattedNodes = Translator.formatNodes(rawResults, flavorisationType, alphabetType);
@@ -139,17 +145,22 @@ export const TranslatorPage = () => {
 
     const onCopyClick = useCallback(() => navigator.clipboard.writeText(translatedPlainText), [translatedPlainText])
 
-    const onLangChange = useCallback(({ from }) => {
-        if (from !== 'isv') {
-            setFromLang(from);
-            localStorage.setItem('translatorLang', JSON.stringify(from));
+    const onLangChange = useCallback((lang) => {
+        if (lang.from !== 'isv') {
+            dispatch(translatorLangAction(lang));
         }
-    }, [setFromLang]);
+    }, [dispatch]);
 
     const onApiClick = useCallback(() => {
         localStorage.setItem('isApi', JSON.stringify(!isApi));
+        if (!translatorLangs.includes(translatorLang.from)) {
+            dispatch(translatorLangAction({
+                from: translatorLangs[0],
+                to: 'isv',
+            }));
+        }
         setApi(!isApi);
-    }, [isApi]);
+    }, [isApi, translatorLang.from, dispatch]);
 
     return (
         <div className="translator">
@@ -163,12 +174,8 @@ export const TranslatorPage = () => {
                     onChange={onApiClick}
                 />
                 <LangSelector
-                    disabled={!isApi}
-                    lang={{
-                        from: fromLang,
-                        to: 'isv',
-                    }}
-                    langs={translatorApiLangs}
+                    lang={translatorLang}
+                    langs={isApi ? translatorApiLangs : translatorLangs}
                     onChange={onLangChange}
                 />
             </div>

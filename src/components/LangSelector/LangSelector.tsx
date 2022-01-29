@@ -27,7 +27,7 @@ const LangPart =
             );
         }
 
-        const options = ['en', ...langs].map((value) => ({
+        const options = [...langs].map((value) => ({
             name: t(`${value}Lang`),
             value,
         }));

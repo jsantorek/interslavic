@@ -29,7 +29,7 @@ export const Controls =
         const short = useShortCardView();
 
         const lang = useLang();
-        const langs = useDictionaryLanguages();
+        const langs = ['en', ...useDictionaryLanguages()];
         const fromText = useFromText();
         const spellCheck = lang.from !== 'isv';
         const searchLanguage = toBCP47(lang.from);

@@ -56,6 +56,10 @@ export const defaultState: IMainState = {
         from: 'en',
         to: 'isv',
     },
+    translatorLang: {
+        from: 'ru',
+        to: 'isv',
+    },
     interfaceLang: getPreferredLanguage(),
     clientId: md5(`${Date.now() * Math.random()}`),
     isvSearchLetters: {

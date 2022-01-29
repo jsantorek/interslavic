@@ -42,6 +42,7 @@ export interface ICommunityLink {
 
 export interface IMainState {
     lang: ILang;
+    translatorLang: ILang;
     interfaceLang: string;
     clientId: string;
     isShortCardView?: boolean;
@@ -91,6 +92,13 @@ export function mainReducer(state: IMainState, { type, data }) {
                 lang,
                 rawResults,
                 results: Dictionary.formatTranslate(rawResults, lang.from, lang.to, flavorisationType, state.alphabets),
+            };
+        }
+        case ActionTypes.TRANSLATOR_LANG: {
+
+            return {
+                ...state,
+                translatorLang: data,
             };
         }
         case ActionTypes.SEARCH_TYPE: {

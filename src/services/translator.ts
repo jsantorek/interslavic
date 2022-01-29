@@ -122,12 +122,6 @@ function isFirstUpper(str: string) {
     return str[0] === str[0].toUpperCase();
 }
 
-interface ITranslateParams {
-    text: string;
-    from?: string;
-    to?: string;
-}
-
 export type TranslateNodeType = 'valid' | 'maybe' | 'error' | 'space';
 
 export interface ITranslateNode {
@@ -149,11 +143,10 @@ class TranslatorClass {
 
     private static instance: TranslatorClass;
     private translateCache: Map<string, any>;
-    private inited: boolean;
+    private lang: string;
 
     private constructor() {
         this.translateCache = new Map();
-        this.inited = false;
     }
 
     private format(isv, flavorisationType, alphabet?: string) {
@@ -356,14 +349,16 @@ class TranslatorClass {
         return { word };
     }
 
-    public init(done) {
-        if (this.inited) {
+    public init(lang, done) {
+        if (this.lang === lang) {
             done();
         } else {
-            loadDicts('dicts/ru', (files) => {
+            this.lang = lang;
+            this.translateCache = new Map();
+
+            loadDicts(`dicts/${this.lang}`, (files) => {
                 Morph.init(files);
 
-                this.inited = true;
                 done();
             });
         }
@@ -386,10 +381,10 @@ class TranslatorClass {
         });
     }
 
-    public translate(params: ITranslateParams, showTime = true): Promise<ITranslateNode[]> {
+    public translate(text, showTime = true): Promise<ITranslateNode[]> {
         return new Promise((resolve, reject) => {
             try {
-                setTimeout(() => resolve(this.translateSync(params, showTime)), 0);
+                setTimeout(() => resolve(this.translateSync(text, showTime)), 0);
             } catch (err) {
                 reject(err);
             }
@@ -404,7 +399,9 @@ class TranslatorClass {
         }));
     }
 
-    public translateSync({ text, from = 'ru', to = 'isv' }: ITranslateParams, showTime = true): ITranslateNode[] {
+    public translateSync(text, showTime = true): ITranslateNode[] {
+        const from = this.lang;
+        const to = 'isv';
         const startTranslateTime = performance.now();
 
         const nodes = splitText(text).map((item, index, arr) => {
