@@ -1,6 +1,6 @@
 import { Dictionary } from 'services/dictionary';
 
-import { loadDicts, Morph } from 'legacy/az';
+import { Az,loadDicts } from 'legacy/az';
 import { conjugationVerb, getConjugationVerbFlat } from 'legacy/conjugationVerb';
 import { declensionAdjective, getDeclensionAdjectiveFlat } from 'legacy/declensionAdjective';
 import { declensionNoun, getDeclensionNounFlat } from 'legacy/declensionNoun';
@@ -357,7 +357,7 @@ class TranslatorClass {
             this.translateCache = new Map();
 
             loadDicts(`dicts/${this.lang}`, (files) => {
-                Morph.init(files);
+                Az.init(files);
 
                 done();
             });
@@ -425,7 +425,7 @@ class TranslatorClass {
             }
 
             let type = 'error'
-            const parsedWords = Morph(rawWord, { typos: 'auto' });
+            const parsedWords = Az.morph(rawWord, { typos: 'auto' });
             const parsedWord = parsedWords.length ? parsedWords[0] : undefined
 
             const infinitive = parsedWord && parsedWord.normalize().word;
