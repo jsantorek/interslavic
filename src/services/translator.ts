@@ -1,6 +1,6 @@
 import { Dictionary } from 'services/dictionary';
 
-import { Az,loadDicts } from 'legacy/az';
+import { Az, loadDicts } from 'legacy/az';
 import { conjugationVerb, getConjugationVerbFlat } from 'legacy/conjugationVerb';
 import { declensionAdjective, getDeclensionAdjectiveFlat } from 'legacy/declensionAdjective';
 import { declensionNoun, getDeclensionNounFlat } from 'legacy/declensionNoun';
@@ -111,7 +111,7 @@ function getGenderFromAz(tag) {
 }
 
 function splitText(text: string): string[] {
-    return text.split(/(\,|\.|\?|\!|\s|\(|\)|\[|\]|\{|\}|\"|\')/).filter(Boolean);
+    return text.split(/(\,|\.|\?|\!|\s|\(|\)|\[|\]|\{|\}|\"|\'|-)/).filter(Boolean);
 }
 
 function isCyrillic(str: string) {
@@ -425,10 +425,10 @@ class TranslatorClass {
             }
 
             let type = 'error'
-            const parsedWords = Az.morph(rawWord, { typos: 'auto' });
+            const parsedWords = Az.morph(rawWord);
             const parsedWord = parsedWords.length ? parsedWords[0] : undefined
 
-            const infinitive = parsedWord && parsedWord.normalize().word;
+            const infinitive = parsedWord && parsedWord.normalize().toString();
 
             let firstTranslateResult;
 
