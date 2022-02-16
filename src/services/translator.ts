@@ -354,10 +354,12 @@ class TranslatorClass {
             done();
         } else {
             this.lang = lang;
-            this.translateCache = new Map();
 
             loadDicts(`dicts/${this.lang}`, (files) => {
-                Az.init(files);
+                // eslint-disable-next-line
+                // @ts-ignore
+                window.Az = Az.init(files);
+                this.translateCache = new Map();
 
                 done();
             });
