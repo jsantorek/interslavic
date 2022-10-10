@@ -41,7 +41,7 @@ const translateFromApi = debounce((lang, text, callback) => {
         body: JSON.stringify({ lang, text }),
     };
 
-    fetch('https://isv-rules-bt2901.pythonanywhere.com/api/', fetchOptions)
+    fetch('https://d5dek8rqp8b9isnc331l.apigw.yandexcloud.net/api/', fetchOptions)
         .then((res) => res.json())
         .then(({ translation }) => callback(translation))
     ;
